@@ -324,8 +324,8 @@ class FdtPropertyBytes(FdtProperty):
         """Init with bytes"""
         FdtProperty.__init__(self, name)
         for byte in bytez:
-            if not -128 <= byte <= 127:
-                raise Exception("Invalid value for byte %d, requires -128 <= number <= 127" % byte)
+            if not 0 <= byte <= 255:
+                raise Exception("Invalid value for byte %d, requires 0 <= number <= 255" % byte)
         if not bytez:
             raise Exception("Invalid Bytes")
         self.bytes = bytez
@@ -333,7 +333,7 @@ class FdtPropertyBytes(FdtProperty):
     @classmethod
     def init_raw(cls, name, raw_value):
         """Init from raw"""
-        return cls(name, unpack('b' * len(raw_value), raw_value))
+        return cls(name, unpack('B' * len(raw_value), raw_value))
 
     def dts_represent(self, depth=0):
         """Get dts string representation"""
@@ -349,7 +349,7 @@ class FdtPropertyBytes(FdtProperty):
             strpos = len(string_store)
             string_store += self.name+'\0'
         blob = pack('>III', FDT_PROP, len(self.bytes), strpos)
-        blob += pack('').join([pack('>b', byte) for byte in self.bytes])
+        blob += pack('').join([pack('>B', byte) for byte in self.bytes])
         if len(blob) % 4:
             blob += pack('b', 0) * (4-(len(blob) % 4))
         pos += len(blob)
@@ -365,7 +365,7 @@ class FdtPropertyBytes(FdtProperty):
 
     def to_raw(self):
         """Return RAW value representation"""
-        return ''.join([pack('>b', byte) for byte in self.bytes])
+        return ''.join([pack('>B', byte) for byte in self.bytes])
 
     def __str__(self):
         """String representation"""
